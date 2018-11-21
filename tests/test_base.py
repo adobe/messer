@@ -33,7 +33,7 @@ DATA_BAG_ITEM_FILE_2 = "/".join([os.path.dirname(os.path.realpath(__file__)), 'r
 DATA_BAG_ITEM_NAME_3 = "secret3"
 DATA_BAG_ITEM_NAME_4 = "secret4"
 DATA_BAG = "unittest"
-SECRETS_FILE = 'sc-dev-messer-unittest'
+SECRETS_FILE = 'adobe-messer-unittest'
 
 
 def test_create_aws_config():
@@ -41,12 +41,12 @@ def test_create_aws_config():
     Ensures that specifying a new config file creates the file.
     :return:
     """
-    args = parse_args(['configure', 'aws', '-c' 'new.ini', '-m' 'sc-test', '-e' 'Dev', '-r' 'us-east-2', '-b' 'test-bucket'])
+    args = parse_args(['configure', 'aws', '-c' 'new.ini', '-m' 'adobe-test', '-e' 'Dev', '-r' 'us-east-2', '-b' 'test-bucket'])
     cmd = AWSConfigure(args)
     cmd.execute()
 
     config = MesserAWSConfig(args.config)
-    assert config.master_key == 'sc-test'
+    assert config.master_key == 'adobe-test'
     assert config.region == 'us-east-2'
     # make sure dev gets converted to lower case
     assert config.tier == 'dev'
@@ -62,7 +62,7 @@ def test_config():
 
     assert config.keys_bucket == "adobe-envelope-keys-bucket-useast1"
     assert config.secrets_bucket == "adobe-secrets-bucket-useast1"
-    assert config.master_key == "sc-dev-messer-unittest"
+    assert config.master_key == "adobe-messer-unittest"
     assert config.role_arn == "arn:aws:iam::123456789101:role/adobe-messer-unittest"
     assert config.role_session_name == "messer_unittest"
     assert config.encryption_context == 'messer_unittest_context'
@@ -153,9 +153,9 @@ def test_parse_encryption_create():
     """
     Make sure all the options are present for creating new cipher text keys
     """
-    args = parse_args(['encryption', 'create', 'aws', 'sc-dev-messer-unittest'])
+    args = parse_args(['encryption', 'create', 'aws', 'adobe-messer-unittest'])
 
-    assert args.key_name == 'sc-dev-messer-unittest'
+    assert args.key_name == 'adobe-messer-unittest'
     assert inspect.isfunction(args.command) is True
     assert args.command.__name__ == 'create_key_aws'
 
@@ -164,8 +164,8 @@ def test_parse_encryption_rotate():
     """
     Make sure all the options are present for rotating existing cipher text keys
     """
-    args = parse_args(['encryption', 'increment', 'aws', 'sc-dev-messer-unittest'])
+    args = parse_args(['encryption', 'increment', 'aws', 'adobe-messer-unittest'])
 
-    assert args.key_name == 'sc-dev-messer-unittest'
+    assert args.key_name == 'adobe-messer-unittest'
     assert inspect.isfunction(args.command) is True
     assert args.command.__name__ == 'increment_key_version_aws'

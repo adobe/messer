@@ -221,48 +221,10 @@ def test_role_s3_policy_restricts_read_existing_folder():
     """
     Ensures that the unit test role cannot list the contents of the 'dev' folder on the secrets bucket
     """
-    args = parse_args(['data', 'bag', 'show', 'aws', "dev", '-c', test_base.CFG_FILE, '--decrypt'])
-    cmd = ShowAWSDataBag(args)
+    args = parse_args(['data', 'bag', 'create', 'aws', "dev", '-c', test_base.CFG_FILE])
+    cmd = CreateAWSDataBag(args)
+    exception_thrown = None
     assert not cmd.name == test_base.DATA_BAG
-    try:
-        cmd.execute()
-    except S3ResponseError, e:
-        exception_thrown = True
-        assert e.status == 403
-        assert e.reason == "Forbidden"
-
-    assert exception_thrown is True
-
-
-def test_role_restricts_kms_decryption_keys():
-    """
-    The cipher text key 'sc-dev-messer-unittest-deny' was generated using the sc-dev-commons master key, even though
-    the unit test role allows s3 access to the envelope encryption key, the KMS api call fails when trying to obtain the
-    plain text key because the role doesn't allow access to it.
-    """
-    args = parse_args(['data', 'bag', 'show', 'aws', test_base.DATA_BAG, test_base.DATA_BAG_ITEM_NAME_3, '-c', test_base.CFG_FILE,
-                       '--decrypt'])
-    cmd = ShowAWSDataBag(args)
-    validate_common_props(cmd)
-    exception_thrown = False
-    try:
-        cmd.execute()
-    except JSONResponseError, e:
-        exception_thrown = True
-        assert e.error_code == "AccessDeniedException"
-
-    assert exception_thrown is True
-
-
-def test_role_restricts_kms_decryption_keys_s3():
-    """
-    Access to the cipher text key 'sc-dev-common' in S3 is NOT allowed by the unit test policy
-    """
-    args = parse_args(['data', 'bag', 'show', 'aws', test_base.DATA_BAG, test_base.DATA_BAG_ITEM_NAME_4, '-c', test_base.CFG_FILE,
-                       '--decrypt'])
-    cmd = ShowAWSDataBag(args)
-    validate_common_props(cmd)
-    exception_thrown = False
     try:
         cmd.execute()
     except S3ResponseError, e:
